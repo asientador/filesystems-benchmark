@@ -1,17 +1,14 @@
 #!/bin/bash
 
-# Crear directorios para los diferentes tipos de archivos
-mkdir "Archivos Pequeños" "Archivos Medianos" "Archivos Grandes" "Archivos Muy Grandes"
-
 # Función para generar archivos pequeños
 generate_small_files() {
-    local size=$1
-    local total=$2
-    local range=$3
-    local folder=$4
+    local min_size=$1
+    local max_size=$2
+    local folder=$3
 
-    for (( i=1; i<=$total; i++ )); do
-        dd if=/dev/urandom of="$folder/file_$i" bs=1 count=$size &>/dev/null
+    for (( i=1; i<=2500; i++ )); do
+        size=$(shuf -i $min_size-$max_size -n 1)
+        dd if=/dev/zero of="$folder/file_$i" bs=1 count=$size &>/dev/null
     done
 }
 
@@ -19,12 +16,11 @@ generate_small_files() {
 generate_medium_files() {
     local min_size=$1
     local max_size=$2
-    local total=$3
-    local folder=$4
+    local folder=$3
 
-    for (( i=1; i<=$total; i++ )); do
+    for (( i=1; i<=2500; i++ )); do
         size=$(shuf -i $min_size-$max_size -n 1)
-        dd if=/dev/urandom of="$folder/file_$i" bs=1 count=$size &>/dev/null
+        dd if=/dev/zero of="$folder/file_$i" bs=1 count=$size &>/dev/null
     done
 }
 
@@ -32,12 +28,11 @@ generate_medium_files() {
 generate_large_files() {
     local min_size=$1
     local max_size=$2
-    local total=$3
-    local folder=$4
+    local folder=$3
 
-    for (( i=1; i<=$total; i++ )); do
+    for (( i=1; i<=2500; i++ )); do
         size=$(shuf -i $min_size-$max_size -n 1)
-        dd if=/dev/urandom of="$folder/file_$i" bs=1M count=$size &>/dev/null
+        dd if=/dev/zero of="$folder/file_$i" bs=1M count=$size &>/dev/null
     done
 }
 
@@ -45,45 +40,47 @@ generate_large_files() {
 generate_very_large_files() {
     local min_size=$1
     local max_size=$2
-    local total=$3
-    local folder=$4
+    local folder=$3
 
-    for (( i=1; i<=$total; i++ )); do
+    for (( i=1; i<=2500; i++ )); do
         size=$(shuf -i $min_size-$max_size -n 1)
-        dd if=/dev/urandom of="$folder/file_$i" bs=1M count=$size &>/dev/null
+        dd if=/dev/zero of="$folder/file_$i" bs=1M count=$size &>/dev/null
     done
 }
 
-# Generar archivos pequeños
+# Crear subcarpetas dentro de /mnt
+mkdir -p "/mnt/Archivos_Pequeños" "/mnt/Archivos_Medianos" "/mnt/Archivos_Grandes" "/mnt/Archivos_Muy_Grandes"
+
+# Generar archivos pequeños en /mnt/Archivos_Pequeños
 echo "Generando archivos pequeños..."
-generate_small_files 1 2500 "1-2" "Archivos Pequeños/Grupo1"
-generate_small_files 3 2500 "2-4" "Archivos Pequeños/Grupo2"
-generate_small_files 6 2500 "4-8" "Archivos Pequeños/Grupo3"
-generate_small_files 9 2500 "8-10" "Archivos Pequeños/Grupo4"
+generate_small_files 1 1 "/mnt/Archivos_Pequeños/Menos_de_2_bytes"
+generate_small_files 2 4 "/mnt/Archivos_Pequeños/2_a_4_bytes"
+generate_small_files 4 8 "/mnt/Archivos_Pequeños/4_a_8_bytes"
+generate_small_files 8 10 "/mnt/Archivos_Pequeños/8_a_10_bytes"
 echo "Archivos pequeños generados."
 
-# Generar archivos medianos
+# Generar archivos medianos en /mnt/Archivos_Medianos
 echo "Generando archivos medianos..."
-generate_medium_files 102400 1048576 2500 "Archivos Medianos/Grupo1"
-generate_medium_files 1048577 2097152 2500 "Archivos Medianos/Grupo2"
-generate_medium_files 2097153 3145728 2500 "Archivos Medianos/Grupo3"
-generate_medium_files 3145729 4194304 2500 "Archivos Medianos/Grupo4"
+generate_medium_files 100 1048576 "/mnt/Archivos_Medianos/100_bytes_a_1MB"
+generate_medium_files 1048577 2097152 "/mnt/Archivos_Medianos/1MB_a_2MB"
+generate_medium_files 2097153 3145728 "/mnt/Archivos_Medianos/2MB_a_3MB"
+generate_medium_files 3145729 4194304 "/mnt/Archivos_Medianos/3MB_a_4MB"
 echo "Archivos medianos generados."
 
-# Generar archivos grandes
+# Generar archivos grandes en /mnt/Archivos_Grandes
 echo "Generando archivos grandes..."
-generate_large_files 15 25 2500 "Archivos Grandes/Grupo1"
-generate_large_files 38 50 2500 "Archivos Grandes/Grupo2"
-generate_large_files 62 75 2500 "Archivos Grandes/Grupo3"
-generate_large_files 87 100 2500 "Archivos Grandes/Grupo4"
+generate_large_files 4194304 26214400 "/mnt/Archivos_Grandes/4MB_a_25MB"
+generate_large_files 26214401 52428800 "/mnt/Archivos_Grandes/25MB_a_50MB"
+generate_large_files 52428801 78643200 "/mnt/Archivos_Grandes/50MB_a_75MB"
+generate_large_files 78643201 104857600 "/mnt/Archivos_Grandes/75MB_a_100MB"
 echo "Archivos grandes generados."
 
-# Generar archivos muy grandes
+# Generar archivos muy grandes en /mnt/Archivos_Muy_Grandes
 echo "Generando archivos muy grandes..."
-generate_very_large_files 150 200 2500 "Archivos Muy Grandes/Grupo1"
-generate_very_large_files 250 300 2500 "Archivos Muy Grandes/Grupo2"
-generate_very_large_files 350 400 2500 "Archivos Muy Grandes/Grupo3"
-generate_very_large_files 460 520 2500 "Archivos Muy Grandes/Grupo4"
+generate_very_large_files 104857600 209715200 "/mnt/Archivos_Muy_Grandes/100MB_a_200MB"
+generate_very_large_files 209715201 314572800 "/mnt/Archivos_Muy_Grandes/200MB_a_300MB"
+generate_very_large_files 314572801 419430400 "/mnt/Archivos_Muy_Grandes/300MB_a_400MB"
+generate_very_large_files 419430401 545259520 "/mnt/Archivos_Muy_Grandes/400MB_a_520MB"
 echo "Archivos muy grandes generados."
 
 echo "¡Proceso completado!"
