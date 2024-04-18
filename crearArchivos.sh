@@ -3,7 +3,7 @@
 # Crear directorio /mnt si no existe
 mkdir -p /mnt/archivos_pequenos
 
-# Función para crear archivos de tamaño específico
+# Función para crear archivos de tamaño específico y llenarlos con datos aleatorios desde /dev/urandom
 create_files() {
     local size=$1
     local group=$2
@@ -11,7 +11,7 @@ create_files() {
     local range_end=$(($group * 2500))
 
     for i in $(seq $range_start $range_end); do
-        echo -n "Contenido" > "/mnt/archivos_pequenos/archivo_${size}_${i}.txt"
+        head -c $size /dev/urandom > "/mnt/archivos_pequenos/archivo_${size}_${i}.txt"
     done
 }
 
